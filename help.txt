@@ -1,0 +1,3 @@
+Possible commands
+    import  Copy data from data/ directory to mongo
+    logreg  Logistic regression
