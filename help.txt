@@ -1,3 +1,4 @@
 Possible commands
     import  Copy data from data/ directory to mongo
     logreg  Logistic regression
+    forest  Random Forest and Multinomial Naive Bayes models
