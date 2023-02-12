@@ -16,12 +16,16 @@ from sklearn.metrics import classification_report, confusion_matrix, accuracy_sc
 from sklearn.naive_bayes import MultinomialNB
 from wordcloud import WordCloud
 
+COLLECTION_NAME = 'clean_df'
+DB_NAME = 'bda_project'
+
 
 def run():
     mongoClient = MongoClient()
 
-    db = mongoClient.clean_df
-    data = db.segment.find()
+    db = mongoClient.get_database(DB_NAME)
+    collection = db[COLLECTION_NAME]
+    data = collection.find()
     df = pd.DataFrame(data)
     df.pop('_id')
     print(df.head())
@@ -68,14 +72,16 @@ def run():
     contractions_re = re.compile('(%s)' % '|'.join(contractions_dict.keys()))
 
     # Function for expanding contractions
-    def expand_contractions(text,contractions_dict):
-      def replace(match):
-        return contractions_dict[match.group(0)]
-      return contractions_re.sub(replace, text)
+    def expand_contractions(text, contractions_dict):
+        def replace(match):
+            return contractions_dict[match.group(0)]
+
+        return contractions_re.sub(replace, text)
+
     # Expanding Contractions in the reviews
-    df['News']=df['News'].apply(lambda x:expand_contractions(x, contractions_dict))
-    for index,text in enumerate(df['News'][35:37]):
-      print('News %d:\n'%(index+1),text)
+    df['News'] = df['News'].apply(lambda x: expand_contractions(x, contractions_dict))
+    for index, text in enumerate(df['News'][35:37]):
+        print('News %d:\n' % (index + 1), text)
 
     # Lowercase the news
     df['lemmatized'] = df['News'].apply(lambda x: x.lower())
@@ -111,6 +117,7 @@ def run():
         plt.axis("off")
         plt.title('\n'.join(wrap(title, 60)), fontsize=13)
         plt.show()
+
     # Transposing document term matrix
     df_dtm = df_dtm.transpose()
     # Plotting word cloud for top5 compound sentiment using indices for top5/bottom5 sentiment rows (also listed down below)

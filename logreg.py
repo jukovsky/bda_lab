@@ -10,12 +10,16 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
+COLLECTION_NAME = 'clean_df'
+DB_NAME = 'bda_project'
+
 
 def run():
     mongoClient = MongoClient()
 
-    db = mongoClient.clean_df
-    data = db.segment.find()
+    db = mongoClient.get_database(DB_NAME)
+    collection = db[COLLECTION_NAME]
+    data = collection.find()
     df = pd.DataFrame(data)
     df.pop('_id')
 
@@ -46,7 +50,7 @@ def run():
     ### DATA PREP AND MODELS FOR DJIA_LABEL ###
     # Create the feature data set:
     X = df
-    X = np.array(X.drop(['Date', 'DJIA_LABEL', 'DJIA_CLOSE', 'OIL_LABEL', 'OIL_CLOSE', 'News'], axis = 1))
+    X = np.array(X.drop(['Date', 'DJIA_LABEL', 'DJIA_CLOSE', 'OIL_LABEL', 'OIL_CLOSE', 'News'], axis=1))
     print('X:')
     print(X)
     # Create the target data set:
@@ -87,7 +91,7 @@ def run():
     # Create the feature data set:
     X = df
     X['OIL_CLOSE'] = X.OIL_CLOSE.replace(np.nan, 0)
-    X = np.array(X.drop(['Date', 'DJIA_LABEL', 'DJIA_CLOSE', 'OIL_LABEL', 'OIL_CLOSE', 'News'], axis = 1))
+    X = np.array(X.drop(['Date', 'DJIA_LABEL', 'DJIA_CLOSE', 'OIL_LABEL', 'OIL_CLOSE', 'News'], axis=1))
     print(X)
     # create the target data set:
     y = np.array(df['OIL_LABEL'])
@@ -126,7 +130,7 @@ def run():
     X['OIL_CLOSE'] = X.OIL_CLOSE.replace(np.nan, 0)
     X = np.array(X.drop(
         ['Date', 'DJIA_LABEL', 'DJIA_CLOSE', 'OIL_LABEL', 'OIL_CLOSE', 'News', 'Subjectivity', 'Polarity', 'neg', 'pos',
-         'neu'], axis = 1))
+         'neu'], axis=1))
     print(X)
     # Create the target data set:
     y = np.array(df['OIL_LABEL'])

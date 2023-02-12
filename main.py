@@ -1,11 +1,7 @@
 import argparse
-import csv
+import cleaner
 import forest
 import logreg
-import os
-import sys
-
-from pymongo import MongoClient
 
 parser = argparse.ArgumentParser()
 parser.add_argument('command', nargs = '?')
@@ -17,23 +13,7 @@ if args.command is None:
     print(helpText)
 
 if args.command == 'import':
-    mongoClient = MongoClient()
-
-    for file in os.listdir('data'):
-        filename = os.path.splitext(file)
-        db = mongoClient.get_database(filename[0])
-        db.segment.drop()
-
-        csvfile = open('data/' + file, 'r')
-        reader = csv.DictReader(csvfile)
-
-        for each in reader:
-            db.segment.insert_one(each)
-
-        data = db.segment.find()
-        print(pd.DataFrame(data))
-
-    print('Import finished')
+    cleaner.run()
 
 if args.command == 'logreg':
     logreg.run()
